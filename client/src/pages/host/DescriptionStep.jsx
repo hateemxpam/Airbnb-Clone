@@ -1,21 +1,19 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useListing } from "../../context/ListingContext";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const DescriptionStep = () => {
   const navigate = useNavigate();
-  const { updateListing } = useListing();
   const [description, setDescription] = useState(
-    "You will have a great and comfortable time in this place.",
+    'You will have a great and comfortable time in this place.'
   );
 
   const handleNext = () => {
     if (!description.trim()) {
-      alert("Please enter a description before proceeding.");
+      alert('Please enter a description before proceeding.');
       return;
     }
-    updateListing("description", description);
-    navigate("/host/home/price");
+
+    navigate('/host/home/price');
   };
 
   return (
@@ -33,7 +31,7 @@ const DescriptionStep = () => {
 
         <div className="flex justify-between pt-4">
           <button
-            onClick={() => navigate("/host/home/photos")}
+            onClick={() => navigate('/host/home/photos')}
             className="px-6 py-3 rounded-full border hover:bg-gray-100"
           >
             Back

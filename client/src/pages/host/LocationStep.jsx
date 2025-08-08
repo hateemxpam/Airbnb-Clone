@@ -1,29 +1,25 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
-import { FaMapMarkerAlt } from "react-icons/fa";
-import { useListing } from "../../context/ListingContext";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api';
+import { FaMapMarkerAlt } from 'react-icons/fa';
 
 const center = {
-  lat: 30.1575,
-  lng: 69.3451,
+  lat: 30.1575, 
+  lng: 69.3451, 
 };
 
 const LocationStep = () => {
   const navigate = useNavigate();
-  const { updateListing } = useListing();
   const { isLoaded } = useLoadScript({
-    googleMapsApiKey: "YOUR_GOOGLE_MAPS_API_KEY",
+    googleMapsApiKey: "YOUR_GOOGLE_MAPS_API_KEY", 
   });
 
   const [marker, setMarker] = useState(center);
-  const [address, setAddress] = useState("");
+  const [address, setAddress] = useState('');
 
   const handleNext = () => {
     if (!address) return;
-
-    updateListing("location", address);
-    navigate("/host/home/basic-info");
+    navigate('/host/home/basic-info'); 
   };
 
   const handleMapClick = (e) => {
@@ -38,12 +34,9 @@ const LocationStep = () => {
   return (
     <div className="min-h-screen p-8 flex flex-col items-center">
       <div className="max-w-2xl w-full">
-        <h2 className="text-3xl font-semibold mb-2">
-          Where's your place located?
-        </h2>
+        <h2 className="text-3xl font-semibold mb-2">Where's your place located?</h2>
         <p className="text-gray-500 mb-6 text-sm">
-          Your address is only shared with guests after they’ve made a
-          reservation.
+          Your address is only shared with guests after they’ve made a reservation.
         </p>
 
         <div className="relative mb-6">
@@ -61,7 +54,7 @@ const LocationStep = () => {
           <GoogleMap
             zoom={6}
             center={marker}
-            mapContainerStyle={{ height: "400px", width: "100%" }}
+            mapContainerStyle={{ height: '400px', width: '100%' }}
             onClick={handleMapClick}
           >
             <Marker position={marker} />
@@ -70,7 +63,7 @@ const LocationStep = () => {
 
         <div className="flex justify-between mt-6">
           <button
-            onClick={() => navigate("/host/home/property-type")}
+            onClick={() => navigate('/host/home/property-type')}
             className="px-6 py-3 rounded-full border text-gray-700 hover:bg-gray-100"
           >
             Back
@@ -79,9 +72,7 @@ const LocationStep = () => {
             onClick={handleNext}
             disabled={!address}
             className={`px-6 py-3 rounded-full text-white text-sm font-medium transition ${
-              address
-                ? "bg-rose-500 hover:bg-rose-600"
-                : "bg-gray-300 cursor-not-allowed"
+              address ? 'bg-rose-500 hover:bg-rose-600' : 'bg-gray-300 cursor-not-allowed'
             }`}
           >
             Next

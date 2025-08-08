@@ -1,10 +1,14 @@
-// src/pages/Host/BasicInfo.jsx
-import { useNavigate } from "react-router-dom";
-import { useListing } from "../../context/ListingContext"; // ✅ context hook
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const BasicInfo = () => {
   const navigate = useNavigate();
-  const { listing, updateListing } = useListing();
+  const [info, setInfo] = useState({
+    guests: 1,
+    bedrooms: 1,
+    beds: 1,
+    bathrooms: 1,
+  });
 
   const limits = {
     guests: 15,
@@ -14,18 +18,22 @@ const BasicInfo = () => {
   };
 
   const handleChange = (field, operation) => {
-    let current = listing[field] || 1;
+    setInfo((prev) => {
+      let newValue =
+        operation === 'inc'
+          ? prev[field] + 1
+          : prev[field] - 1;
 
-    let newValue = operation === "inc" ? current + 1 : current - 1;
+      if (newValue < 1) newValue = 1;
+      if (newValue > limits[field]) newValue = limits[field];
 
-    if (newValue < 1) newValue = 1;
-    if (newValue > limits[field]) newValue = limits[field];
-
-    updateListing(field, newValue);
+      return { ...prev, [field]: newValue };
+    });
   };
 
   const handleNext = () => {
-    navigate("/host/home/photos");
+    // Optionally save to global state or context
+    navigate('/host/home/photos');
   };
 
   return (
@@ -38,22 +46,19 @@ const BasicInfo = () => {
           You'll add more details later, like bed types.
         </p>
 
-        {["guests", "bedrooms", "beds", "bathrooms"].map((field) => (
-          <div
-            key={field}
-            className="flex justify-between items-center border-b py-4"
-          >
+        {['guests', 'bedrooms', 'beds', 'bathrooms'].map((field) => (
+          <div key={field} className="flex justify-between items-center border-b py-4">
             <div className="capitalize font-medium text-lg">{field}</div>
             <div className="flex items-center space-x-4">
               <button
-                onClick={() => handleChange(field, "dec")}
+                onClick={() => handleChange(field, 'dec')}
                 className="w-8 h-8 rounded-full border text-xl text-gray-700 hover:bg-gray-100"
               >
                 −
               </button>
-              <span className="w-6 text-center">{listing[field] || 1}</span>
+              <span className="w-6 text-center">{info[field]}</span>
               <button
-                onClick={() => handleChange(field, "inc")}
+                onClick={() => handleChange(field, 'inc')}
                 className="w-8 h-8 rounded-full border text-xl text-gray-700 hover:bg-gray-100"
               >
                 +
@@ -64,11 +69,11 @@ const BasicInfo = () => {
 
         <div className="flex justify-between pt-4">
           <button
-            onClick={() => navigate("/host/home/location")}
+            onClick={() => navigate('/host/home/location')}
             className="px-6 py-3 rounded-full border hover:bg-gray-100"
           >
             Back
-          </button>
+          </button>          
           <button
             onClick={handleNext}
             className="px-6 py-3 rounded-full bg-rose-500 text-white hover:bg-rose-600 transition"

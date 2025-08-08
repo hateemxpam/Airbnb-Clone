@@ -1,15 +1,13 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "../../api/axios"; // Adjust the import path as needed
-import { useListing } from "../../context/ListingContext";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from '../../api/axios'; // Adjust the import path as needed
 
 const PhotosUpload = () => {
   const navigate = useNavigate();
   const [images, setImages] = useState([]);
   const [uploading, setUploading] = useState(false);
-  const { updateListing } = useListing();
 
-  const userId = localStorage.getItem("userId"); // ✅ Get logged-in user ID
+  const userId = localStorage.getItem('userId'); // ✅ Get logged-in user ID
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
@@ -19,57 +17,55 @@ const PhotosUpload = () => {
 
   const handleUpload = async () => {
     if (images.length < 4) {
-      alert("Please upload at least 4 photos.");
+      alert('Please upload at least 4 photos.');
       return;
     }
 
     if (!userId) {
-      alert("❌ User not logged in. Please login again.");
+      alert('❌ User not logged in. Please login again.');
       return;
     }
 
     const formData = new FormData();
 
     images.forEach((file) => {
-      formData.append("images", file); // must match backend field name
+      formData.append('images', file); // must match backend field name
     });
 
-    formData.append("userId", userId); // ✅ Attach userId to backend
+    formData.append('userId', userId); // ✅ Attach userId to backend
 
     try {
       setUploading(true);
 
-      const res = await axios.post("/host/upload-images", formData, {
+      const res = await axios.post('/host/upload-images', formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          'Content-Type': 'multipart/form-data',
         },
       });
 
       const imageUrls = res.data.imageUrls;
 
       // ✅ Store temporarily in localStorage for later apartment submission
-      localStorage.setItem("uploadedImageUrls", JSON.stringify(imageUrls));
-      // ✅ Save to context
-      updateListing("imageUrls", imageUrls);
-      navigate("/host/home/description"); // Move to next step
+      localStorage.setItem('uploadedImageUrls', JSON.stringify(imageUrls));
+
+      alert('✅ Images uploaded successfully!');
+      navigate('/host/home/description'); // Move to next step
+
     } catch (err) {
-      console.error("❌ Image upload failed:", err);
-      alert("❌ Upload failed. Try again.");
+      console.error('❌ Image upload failed:', err);
+      alert('❌ Upload failed. Try again.');
     } finally {
       setUploading(false);
     }
-    console.log("Userid", userId);
+    console.log('Userid', userId);
   };
 
   return (
     <div className="min-h-screen p-8 flex justify-center items-center">
       <div className="w-full max-w-2xl space-y-6">
-        <h2 className="text-3xl font-semibold">
-          Add some photos of your house
-        </h2>
+        <h2 className="text-3xl font-semibold">Add some photos of your house</h2>
         <p className="text-gray-500">
-          You’ll need 4–5 photos to get started. You can add more or make
-          changes later.
+          You’ll need 4–5 photos to get started. You can add more or make changes later.
         </p>
 
         {/* Preview Selected Images */}
@@ -96,7 +92,7 @@ const PhotosUpload = () => {
         {/* Navigation Buttons */}
         <div className="flex justify-between pt-4">
           <button
-            onClick={() => navigate("/host/home/basic-info")}
+            onClick={() => navigate('/host/home/basic-info')}
             className="px-6 py-3 rounded-full border hover:bg-gray-100"
           >
             Back
@@ -107,7 +103,7 @@ const PhotosUpload = () => {
             disabled={uploading}
             className="px-6 py-3 rounded-full bg-rose-500 text-white hover:bg-rose-600 transition disabled:opacity-50"
           >
-            {uploading ? "Uploading..." : "Next"}
+            {uploading ? 'Uploading...' : 'Next'}
           </button>
         </div>
       </div>

@@ -1,72 +1,43 @@
 // src/pages/Host/HostPricePage.jsx
-
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useListing } from "../../context/ListingContext"; // ✅ context hook
-import axios from "../../api/axios"; // ✅ your API setup
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const HostPricePage = () => {
   const navigate = useNavigate();
-  const [price, setPrice] = useState("");
+  const [price, setPrice] = useState('');
   const [showModal, setShowModal] = useState(false);
 
-  const { listing, updateListing, resetListing } = useListing(); // ✅ Context access
-  const userId = localStorage.getItem("userId"); // ✅ Currently logged in user
-
   const handleSubmit = () => {
-    if (!price || Number(price) <= 0) {
-      alert("Please enter a valid price.");
-      return;
-    }
-
-    updateListing("price", parseFloat(price)); // ✅ Save price to context
+    // ✅ Add logic to save price to context or backend here if needed
     setShowModal(true);
   };
 
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     setShowModal(false);
-
-    try {
-      const payload = {
-        ...listing,
-        price: parseFloat(price),
-        userId: parseInt(userId),
-      };
-
-      const res = await axios.post("/host/create-apartment", payload);
-
-      if (res.status === 201 || res.status === 200) {
-        alert("✅ Listing created successfully!");
-        resetListing();
-        navigate("/host/dashboard");
-      } else {
-        alert("❌ Something went wrong.");
-      }
-    } catch (error) {
-      console.error("❌ Listing submission failed:", error);
-      alert("❌ Failed to submit listing. Please try again.");
-    }
+    navigate('/host/dashboard');
   };
 
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6 relative">
       {/* 🔙 Back Button */}
-      <button
-        onClick={() => navigate(-1)}
-        className="absolute top-6 left-6 text-gray-600 hover:text-black border px-4 py-2 rounded-full shadow-sm transition"
-      >
-        ← Back
-      </button>
+      <div className="absolute top-6 left-6">
+        <button
+          onClick={() => navigate(-1)}
+          className="text-gray-600 hover:text-black border px-4 py-2 rounded-full shadow-sm transition"
+        >
+          ← Back
+        </button>
+      </div>
 
-      {/* 🏷️ Title & Tip */}
+      {/* 🏷️ Title + Tip */}
       <div className="text-center space-y-2 mb-12">
         <h1 className="text-3xl font-bold">Now, set a weekday base price</h1>
         <p className="text-gray-500">
-          💡 Set a price that’s competitive and attractive to first-time guests.
+          💡 Start with a competitive rate to attract your first guests.
         </p>
       </div>
 
-      {/* 💰 Price Input */}
+      {/* 💵 Price Input */}
       <div className="text-6xl font-bold flex items-center gap-2 mb-4">
         <span>$</span>
         <input
@@ -90,13 +61,10 @@ const HostPricePage = () => {
 
       {/* 🪟 Modal (Glass Effect) */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md text-center space-y-4">
-            <h2 className="text-xl font-semibold">Confirm Your Price</h2>
-            <p className="text-gray-600">
-              Are you sure you want to proceed with <strong>${price}</strong> as
-              your base price?
-            </p>
+            <h2 className="text-xl font-semibold">Confirm your price</h2>
+            <p className="text-gray-600">Are you sure you want to proceed with $<span className="font-bold">{price}</span> as your base price?</p>
 
             <div className="flex justify-center gap-4 mt-6">
               <button
@@ -120,3 +88,4 @@ const HostPricePage = () => {
 };
 
 export default HostPricePage;
+
