@@ -1,20 +1,87 @@
 // src/pages/Host/HostPricePage.jsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from '../../api/axios';
 
 const HostPricePage = () => {
   const navigate = useNavigate();
   const [price, setPrice] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const handleSubmit = () => {
-    // ✅ Add logic to save price to context or backend here if needed
+    if (!price || price <= 0) {
+      alert('Please enter a valid price.');
+      return;
+    }
     setShowModal(true);
   };
 
-  const handleConfirm = () => {
-    setShowModal(false);
-    navigate('/host/dashboard');
+  const handleConfirm = async () => {
+    setSaving(true);
+    
+    try {
+      const userId = localStorage.getItem('userId');
+      const token = localStorage.getItem('token');
+
+      if (!userId || !token) {
+        alert('Please log in again.');
+        return;
+      }
+
+      // Get uploaded image URLs from localStorage
+      const uploadedImageUrls = JSON.parse(localStorage.getItem('uploadedImageUrls') || '[]');
+
+      // Create a simple listing with basic data
+      const apartmentData = {
+        userId: userId,
+        title: "Beautiful Property",
+        description: "A wonderful place to stay",
+        propertyType: "House",
+        placeType: "Entire place",
+        location: "City Center",
+        price: parseFloat(price),
+        guests: 2,
+        bedrooms: 1,
+        beds: 1,
+        bathrooms: 1,
+      };
+
+      // Create the apartment
+      const apartmentResponse = await axios.post('/host/create-apartment', apartmentData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      // If we have images, create the apartment images
+      if (uploadedImageUrls.length > 0) {
+        const imageData = uploadedImageUrls.map(url => ({
+          url: url,
+          apartmentId: apartmentResponse.data.apartment.id,
+        }));
+
+        // Create image records
+        await axios.post('/host/apartment-images', imageData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      }
+
+      // Clear the uploaded images from localStorage
+      localStorage.removeItem('uploadedImageUrls');
+
+      alert('✅ Listing created successfully!');
+      setShowModal(false);
+      navigate('/host/dashboard');
+      
+    } catch (error) {
+      console.error('Error creating listing:', error);
+      alert('❌ Failed to create listing. Please try again.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -54,7 +121,12 @@ const HostPricePage = () => {
       {/* 🔘 Submit Button */}
       <button
         onClick={handleSubmit}
-        className="mt-12 bg-rose-500 hover:bg-rose-600 text-white px-6 py-3 rounded-full shadow-lg transition"
+        disabled={!price || price <= 0}
+        className={`mt-12 px-6 py-3 rounded-full shadow-lg transition ${
+          price && price > 0
+            ? 'bg-rose-500 hover:bg-rose-600 text-white'
+            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+        }`}
       >
         Submit Price
       </button>
@@ -63,21 +135,29 @@ const HostPricePage = () => {
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md text-center space-y-4">
-            <h2 className="text-xl font-semibold">Confirm your price</h2>
-            <p className="text-gray-600">Are you sure you want to proceed with $<span className="font-bold">{price}</span> as your base price?</p>
+            <h2 className="text-xl font-semibold">Confirm your listing</h2>
+            <p className="text-gray-600">
+              Are you sure you want to create this listing with $<span className="font-bold">{price}</span> as your base price?
+            </p>
 
             <div className="flex justify-center gap-4 mt-6">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-5 py-2 rounded-full border text-gray-700 hover:bg-gray-100 transition"
+                disabled={saving}
+                className="px-5 py-2 rounded-full border text-gray-700 hover:bg-gray-100 transition disabled:opacity-50"
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirm}
-                className="px-5 py-2 rounded-full bg-rose-500 text-white hover:bg-rose-600 transition"
+                disabled={saving}
+                className={`px-5 py-2 rounded-full transition ${
+                  saving
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-rose-500 text-white hover:bg-rose-600'
+                }`}
               >
-                Yes, Confirm
+                {saving ? 'Creating...' : 'Yes, Create Listing'}
               </button>
             </div>
           </div>

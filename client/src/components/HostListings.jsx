@@ -14,6 +14,17 @@ const HostListings = ({ listings }) => {
             key={listing.id}
             className="p-4 border rounded-lg shadow-sm hover:shadow-md transition"
           >
+            {/* Image */}
+            {listing.images && listing.images.length > 0 && (
+              <div className="mb-3">
+                <img
+                  src={`http://localhost:5000${listing.images[0].url}`}
+                  alt={listing.title}
+                  className="w-full h-32 object-cover rounded-lg"
+                />
+              </div>
+            )}
+            
             <h4 className="font-medium text-lg">{listing.title}</h4>
             <p className="text-sm text-gray-600">{listing.description}</p>
 

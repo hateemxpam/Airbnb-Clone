@@ -76,21 +76,21 @@ const PropertyType = () => {
           </div>
         </div>
 
-        {/* Next */}
-        <div className="flex justify-between pt-4">
+        {/* Navigation */}
+        <div className="flex justify-between pt-6">
           <button
             onClick={() => navigate('/host/home')}
             className="px-6 py-3 rounded-full border hover:bg-gray-100"
           >
             Back
-          </button>          
+          </button>
           <button
-            disabled={!selectedType || !selectedPlace}
             onClick={handleNext}
-            className={`px-6 py-3 rounded-full text-white text-sm font-medium transition ${
+            disabled={!selectedType || !selectedPlace}
+            className={`px-6 py-3 rounded-full transition ${
               selectedType && selectedPlace
-                ? 'bg-rose-500 hover:bg-rose-600'
-                : 'bg-gray-300 cursor-not-allowed'
+                ? 'bg-rose-500 text-white hover:bg-rose-600'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
             }`}
           >
             Next

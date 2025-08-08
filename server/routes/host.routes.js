@@ -77,7 +77,11 @@ router.get('/dashboard/:userId', async (req, res) => {
       where: { id: parseInt(userId) },
       include: {
         extraInfo: true,
-        apartments: true,
+        apartments: {
+          include: {
+            images: true
+          }
+        },
       },
     });
 
@@ -93,7 +97,7 @@ router.get('/dashboard/:userId', async (req, res) => {
   }
 });
 
-router.post('/create-apartment', upload.array('images', 5), async (req, res) => {
+router.post('/create-apartment', async (req, res) => {
   try {
     const {
       userId,
@@ -125,17 +129,8 @@ router.post('/create-apartment', upload.array('images', 5), async (req, res) => 
       },
     });
 
-    const imageUrls = req.files.map(file => ({
-      url: `/media/${file.filename}`,
-      apartmentId: apartment.id,
-    }));
-
-    await prisma.apartmentImage.createMany({
-      data: imageUrls,
-    });
-
     res.status(201).json({
-      message: 'Apartment and images created successfully',
+      message: 'Apartment created successfully',
       apartment,
     });
 
@@ -155,5 +150,23 @@ router.post('/upload-images', upload.array('images', 10), async (req, res) => {
   }
 });
 
+// POST /api/host/apartment-images - Create apartment images
+router.post('/apartment-images', async (req, res) => {
+  try {
+    const imageData = req.body;
+    
+    const createdImages = await prisma.apartmentImage.createMany({
+      data: imageData,
+    });
+
+    res.status(201).json({
+      message: 'Apartment images created successfully',
+      count: createdImages.count,
+    });
+  } catch (error) {
+    console.error('Error creating apartment images:', error);
+    res.status(500).json({ error: 'Failed to create apartment images' });
+  }
+});
 
 module.exports = router;
