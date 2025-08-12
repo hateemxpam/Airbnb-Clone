@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api';
 import { FaMapMarkerAlt } from 'react-icons/fa';
+import { useListing } from '../../context/ListingContext';
 
 const center = {
   lat: 30.1575, 
@@ -16,9 +17,11 @@ const LocationStep = () => {
 
   const [marker, setMarker] = useState(center);
   const [address, setAddress] = useState('');
+  const { updateListingData } = useListing();
 
   const handleNext = () => {
     if (!address) return;
+    updateListingData({ location: `${marker.lat},${marker.lng}`, address });
     navigate('/host/home/basic-info'); 
   };
 
@@ -30,6 +33,8 @@ const LocationStep = () => {
   };
 
   if (!isLoaded) return <p>Loading map...</p>;
+
+  //console.log("Address: ", address);
 
   return (
     <div className="min-h-screen p-8 flex flex-col items-center">

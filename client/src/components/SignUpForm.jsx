@@ -100,83 +100,116 @@ const SignUpForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <input
-        type="text"
-        name="name"
-        placeholder="Name"
-        value={form.name}
-        onChange={handleChange}
-        className="w-full px-4 py-2 border rounded-md"
-      />
-      {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
+      {/* Name */}
+      <div>
+        <input
+          type="text"
+          name="name"
+          placeholder="Name"
+          value={form.name}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-transparent"
+        />
+        {errors.name && (
+          <p className="mt-1 text-xs text-red-500">{errors.name}</p>
+        )}
+      </div>
 
-      <input
-        type="email"
-        name="email"
-        placeholder="Email"
-        value={form.email}
-        onChange={handleChange}
-        className="w-full px-4 py-2 border rounded-md"
-      />
-      {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
+      {/* Email */}
+      <div>
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          value={form.email}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-transparent"
+        />
+        {errors.email && (
+          <p className="mt-1 text-xs text-red-500">{errors.email}</p>
+        )}
+      </div>
 
-      <input
-        type="text"
-        name="phone"
-        placeholder="Phone Number"
-        value={form.phone}
-        onChange={handleChange}
-        className="w-full px-4 py-2 border rounded-md"
-      />
-      {errors.phone && <p className="text-sm text-red-500">{errors.phone}</p>}
+      {/* Phone */}
+      <div>
+        <input
+          type="text"
+          name="phone"
+          placeholder="Phone Number"
+          value={form.phone}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-transparent"
+        />
+        {errors.phone && (
+          <p className="mt-1 text-xs text-red-500">{errors.phone}</p>
+        )}
+      </div>
 
-      <input
-        type="password"
-        name="password"
-        placeholder="Password"
-        value={form.password}
-        onChange={handleChange}
-        className="w-full px-4 py-2 border rounded-md"
-      />
-      {errors.password && (
-        <p className="text-sm text-red-500">{errors.password}</p>
-      )}
+      {/* Password */}
+      <div>
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={form.password}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-transparent"
+        />
+        {errors.password && (
+          <p className="mt-1 text-xs text-red-500">{errors.password}</p>
+        )}
+      </div>
 
-      <input
-        type="password"
-        name="confirmPassword"
-        placeholder="Confirm Password"
-        value={form.confirmPassword}
-        onChange={handleChange}
-        className="w-full px-4 py-2 border rounded-md"
-      />
-      {errors.confirmPassword && (
-        <p className="text-sm text-red-500">{errors.confirmPassword}</p>
-      )}
+      {/* Confirm Password */}
+      <div>
+        <input
+          type="password"
+          name="confirmPassword"
+          placeholder="Confirm Password"
+          value={form.confirmPassword}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-transparent"
+        />
+        {errors.confirmPassword && (
+          <p className="mt-1 text-xs text-red-500">{errors.confirmPassword}</p>
+        )}
+      </div>
 
-      <input
-        type="radio"
-        name="role"
-        value="user"
-        checked={form.role === "user"}
-        onChange={handleChange}
-        className="mr-2"
-      />
-      <label className="mr-4">User</label>
+      {/* Role */}
+      <div>
+        <div className="flex items-center space-x-6 my-2">
+          <div className="flex items-center">
+            <input
+              type="radio"
+              name="role"
+              value="user"
+              checked={form.role === "user"}
+              onChange={handleChange}
+              className="mr-2 h-4 w-4 text-red-500 focus:ring-red-400"
+            />
+            <label className="text-gray-700">User</label>
+          </div>
 
-      <input
-        type="radio"
-        name="role"
-        value="host"
-        checked={form.role === "host"}
-        onChange={handleChange}
-        className="mr-2"
-      />
-      <label>Host</label>
+          <div className="flex items-center">
+            <input
+              type="radio"
+              name="role"
+              value="host"
+              checked={form.role === "host"}
+              onChange={handleChange}
+              className="mr-2 h-4 w-4 text-red-500 focus:ring-red-400"
+            />
+            <label className="text-gray-700">Host</label>
+          </div>
+        </div>
+        {errors.role && (
+          <p className="mt-1 text-xs text-red-500">{errors.role}</p>
+        )}
+      </div>
 
       <button
         type="submit"
-        className="w-full py-2 bg-coral text-red font-semibold rounded-md bg-red-500 hover:bg-red-400"
+        className="w-full py-2 bg-red-500 text-white font-semibold rounded-md hover:bg-red-400 transition-colors duration-200"
       >
         Sign Up
       </button>

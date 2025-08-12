@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useListing } from '../../context/ListingContext';
 
 const PROPERTY_TYPES = [
   { label: 'House', icon: '🏠' },
@@ -23,10 +24,17 @@ const PropertyType = () => {
   const [selectedType, setSelectedType] = useState(null);
   const [selectedPlace, setSelectedPlace] = useState(null);
   const navigate = useNavigate();
+  const { updateListingData } = useListing();
 
   const handleNext = () => {
     if (!selectedType || !selectedPlace) return;
+    // Save selected values to global listing context
+    updateListingData({ propertyType: selectedType, placeType: selectedPlace });
     navigate('/host/home/location');
+
+  //  console.log("selectedType", selectedType);
+  //  console.log("selectedPlace", selectedPlace);    
+
   };
 
   return (

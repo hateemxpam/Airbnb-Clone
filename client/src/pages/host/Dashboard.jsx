@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import HostProfilePanel from "../../components/HostProfilePanel";
 import HostListings from "../../components/HostListings";
 import AddNewListingButton from "../../components/AddNewListingButton";
+import LogoutButton from "../../components/LogoutButton";
 import axios from "../../api/axios";
 
 const HostDashboard = () => {
@@ -25,7 +26,6 @@ const HostDashboard = () => {
 
         const data = res.data;
 
-        // Structure the profile and listings
         const profile = {
           name: data.name,
           email: data.email,
@@ -57,8 +57,8 @@ const HostDashboard = () => {
 
   if (loading)
     return (
-      <div className="text-center py-10 text-gray-500">
-        Loading dashboard...
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white to-rose-50">
+        <div className="text-center text-gray-500">Loading dashboard...</div>
       </div>
     );
   if (error)
@@ -71,25 +71,43 @@ const HostDashboard = () => {
   const { profile, apartments } = hostData;
 
   return (
-    <div className="min-h-screen bg-gray-100 py-10 px-4 flex justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-white to-rose-50 py-10 px-4 flex justify-center">
       <div className="w-full max-w-6xl flex flex-col gap-6">
-        {/* 🔲 TOP RECTANGLE */}
-        <div className="bg-white shadow-lg rounded-xl p-6">
+        {/* Single professional card */}
+        <div className="bg-white/85 backdrop-blur rounded-2xl shadow-xl p-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Left Side - Profile Info Panel */}
+            {/* Left - Profile */}
             <div className="md:col-span-1">
-              <HostProfilePanel profile={profile} />
+              <h2 className="text-lg font-semibold text-gray-900 mb-2">Profile</h2>
+              <div className="flex flex-col items-center">
+                <HostProfilePanel
+                  profile={profile}
+                  onUpdated={(partial) => {
+                    setHostData((prev) => ({
+                      ...prev,
+                      profile: { ...prev.profile, ...partial },
+                    }));
+                  }}
+                />
+                <div className="mt-2">
+                  <LogoutButton />
+                </div>
+              </div>
             </div>
 
-            {/* Right Side - Listings and Button */}
-            <div className="md:col-span-2 flex flex-col gap-6">
-              {/* Top Rectangle - Listings */}
-              <div className="bg-gray-50 p-4 rounded-lg shadow-md">
-                <HostListings listings={apartments} />
+            <div className="md:col-span-2">
+              <div className="bg-gray-50 p-4 rounded-lg border">
+                <HostListings
+                  listings={apartments}
+                  onDeleted={(id) => {
+                    setHostData((prev) => ({
+                      ...prev,
+                      apartments: prev.apartments.filter((a) => a.id !== id),
+                    }));
+                  }}
+                />
               </div>
-
-              {/* Bottom Rectangle - Add Button */}
-              <div className="bg-gray-50 p-4 rounded-lg shadow-md flex justify-center">
+              <div className="mt-6 flex justify-center">
                 <AddNewListingButton />
               </div>
             </div>

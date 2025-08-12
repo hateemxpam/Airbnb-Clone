@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useListing } from '../../context/ListingContext';
 
 const BasicInfo = () => {
   const navigate = useNavigate();
+  const { updateListingData } = useListing();
   const [title, setTitle] = useState('');
   const [info, setInfo] = useState({
     guests: 1,
@@ -37,8 +39,21 @@ const BasicInfo = () => {
       alert('Please enter a title for your listing.');
       return;
     }
+    updateListingData({
+      title: title.trim(),
+      guests: info.guests,
+      bedrooms: info.bedrooms,
+      beds: info.beds,
+      bathrooms: info.bathrooms,
+    });
     navigate('/host/home/photos');
   };
+
+  console.log("info", info);
+  console.log("title", title);
+
+
+
 
   return (
     <div className="min-h-screen p-8 flex justify-center items-center">

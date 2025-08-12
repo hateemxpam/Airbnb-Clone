@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from '../../api/axios';
+import { useListing } from '../../context/ListingContext';
 
 const PhotosUpload = () => {
   const navigate = useNavigate();
   const [images, setImages] = useState([]);
   const [uploading, setUploading] = useState(false);
+  const { updateListingData } = useListing();
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
@@ -43,6 +45,8 @@ const PhotosUpload = () => {
       
       // Store image URLs in localStorage for the next step
       localStorage.setItem('uploadedImageUrls', JSON.stringify(imageUrls));
+      // Also keep them in context for review
+      updateListingData({ images: imageUrls });
       
       alert('✅ Images uploaded successfully!');
       navigate('/host/home/description');
