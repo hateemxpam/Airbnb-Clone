@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api';
 import { FaMapMarkerAlt } from 'react-icons/fa';
+import { useListing } from '../../context/ListingContext';
 
 const center = {
   lat: 30.1575, 
@@ -16,9 +17,11 @@ const LocationStep = () => {
 
   const [marker, setMarker] = useState(center);
   const [address, setAddress] = useState('');
+  const { updateListingData } = useListing();
 
   const handleNext = () => {
     if (!address) return;
+    updateListingData({ location: `${marker.lat},${marker.lng}`, address });
     navigate('/host/home/basic-info'); 
   };
 
@@ -31,12 +34,14 @@ const LocationStep = () => {
 
   if (!isLoaded) return <p>Loading map...</p>;
 
+  //console.log("Address: ", address);
+
   return (
     <div className="min-h-screen p-8 flex flex-col items-center">
       <div className="max-w-2xl w-full">
         <h2 className="text-3xl font-semibold mb-2">Where's your place located?</h2>
         <p className="text-gray-500 mb-6 text-sm">
-          Your address is only shared with guests after they’ve made a reservation.
+          Your address is only shared with guests after they've made a reservation.
         </p>
 
         <div className="relative mb-6">
@@ -61,18 +66,21 @@ const LocationStep = () => {
           </GoogleMap>
         </div>
 
-        <div className="flex justify-between mt-6">
+        {/* Navigation */}
+        <div className="flex justify-between pt-6">
           <button
             onClick={() => navigate('/host/home/property-type')}
-            className="px-6 py-3 rounded-full border text-gray-700 hover:bg-gray-100"
+            className="px-6 py-3 rounded-full border hover:bg-gray-100"
           >
             Back
           </button>
           <button
             onClick={handleNext}
             disabled={!address}
-            className={`px-6 py-3 rounded-full text-white text-sm font-medium transition ${
-              address ? 'bg-rose-500 hover:bg-rose-600' : 'bg-gray-300 cursor-not-allowed'
+            className={`px-6 py-3 rounded-full transition ${
+              address
+                ? 'bg-rose-500 text-white hover:bg-rose-600'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
             }`}
           >
             Next

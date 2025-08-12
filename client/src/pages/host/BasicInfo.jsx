@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useListing } from '../../context/ListingContext';
 
 const BasicInfo = () => {
   const navigate = useNavigate();
+  const { updateListingData } = useListing();
+  const [title, setTitle] = useState('');
   const [info, setInfo] = useState({
     guests: 1,
     bedrooms: 1,
@@ -32,9 +35,25 @@ const BasicInfo = () => {
   };
 
   const handleNext = () => {
-    // Optionally save to global state or context
+    if (!title.trim()) {
+      alert('Please enter a title for your listing.');
+      return;
+    }
+    updateListingData({
+      title: title.trim(),
+      guests: info.guests,
+      bedrooms: info.bedrooms,
+      beds: info.beds,
+      bathrooms: info.bathrooms,
+    });
     navigate('/host/home/photos');
   };
+
+  console.log("info", info);
+  console.log("title", title);
+
+
+
 
   return (
     <div className="min-h-screen p-8 flex justify-center items-center">
@@ -45,6 +64,20 @@ const BasicInfo = () => {
         <p className="text-gray-500">
           You'll add more details later, like bed types.
         </p>
+
+        {/* Title Input */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700">
+            Give your listing a title
+          </label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="e.g., Beautiful apartment in the heart of the city"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-400"
+          />
+        </div>
 
         {['guests', 'bedrooms', 'beds', 'bathrooms'].map((field) => (
           <div key={field} className="flex justify-between items-center border-b py-4">
@@ -76,7 +109,12 @@ const BasicInfo = () => {
           </button>          
           <button
             onClick={handleNext}
-            className="px-6 py-3 rounded-full bg-rose-500 text-white hover:bg-rose-600 transition"
+            disabled={!title.trim()}
+            className={`px-6 py-3 rounded-full transition ${
+              title.trim()
+                ? 'bg-rose-500 text-white hover:bg-rose-600'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
           >
             Next
           </button>

@@ -77,7 +77,11 @@ router.get('/dashboard/:userId', async (req, res) => {
       where: { id: parseInt(userId) },
       include: {
         extraInfo: true,
-        apartments: true,
+        apartments: {
+          include: {
+            images: true
+          }
+        },
       },
     });
 
@@ -93,7 +97,7 @@ router.get('/dashboard/:userId', async (req, res) => {
   }
 });
 
-router.post('/create-apartment', upload.array('images', 5), async (req, res) => {
+router.post('/create-apartment', async (req, res) => {
   try {
     const {
       userId,
@@ -125,17 +129,8 @@ router.post('/create-apartment', upload.array('images', 5), async (req, res) => 
       },
     });
 
-    const imageUrls = req.files.map(file => ({
-      url: `/media/${file.filename}`,
-      apartmentId: apartment.id,
-    }));
-
-    await prisma.apartmentImage.createMany({
-      data: imageUrls,
-    });
-
     res.status(201).json({
-      message: 'Apartment and images created successfully',
+      message: 'Apartment created successfully',
       apartment,
     });
 
@@ -155,5 +150,92 @@ router.post('/upload-images', upload.array('images', 10), async (req, res) => {
   }
 });
 
+// POST /api/host/apartment-images - Create apartment images
+router.post('/apartment-images', async (req, res) => {
+  try {
+    const imageData = req.body;
+    
+    const createdImages = await prisma.apartmentImage.createMany({
+      data: imageData,
+    });
+
+    res.status(201).json({
+      message: 'Apartment images created successfully',
+      count: createdImages.count,
+    });
+  } catch (error) {
+    console.error('Error creating apartment images:', error);
+    res.status(500).json({ error: 'Failed to create apartment images' });
+  }
+});
+
+// PUT /api/host/profile-image - Upsert host profile image
+router.put('/profile-image', async (req, res) => {
+  try {
+    const { userId, url } = req.body;
+    if (!userId || !url) {
+      return res.status(400).json({ error: 'userId and url are required' });
+    }
+    const updated = await prisma.userExtraInfo.upsert({
+      where: { userId: parseInt(userId) },
+      update: { profileImage: url },
+      create: { userId: parseInt(userId), profileImage: url },
+    });
+    res.status(200).json({ message: 'Profile image updated', extraInfo: updated });
+  } catch (error) {
+    console.error('Error updating profile image:', error);
+    res.status(500).json({ error: 'Failed to update profile image' });
+  }
+});
+
+// DELETE /api/host/apartment/:id - Delete an apartment and its images
+router.delete('/apartment/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const apartmentId = parseInt(id);
+    // Delete related images first
+    await prisma.apartmentImage.deleteMany({ where: { apartmentId } });
+    // Then delete apartment
+    await prisma.apartment.delete({ where: { id: apartmentId } });
+    res.status(200).json({ message: 'Apartment deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting apartment:', error);
+    res.status(500).json({ error: 'Failed to delete apartment' });
+  }
+});
+
+// PUT /api/host/profile - Update host profile (name and about only)
+router.put('/profile', async (req, res) => {
+  try {
+    const { userId, name, about } = req.body;
+    if (!userId) return res.status(400).json({ error: 'userId is required' });
+
+    // Update name on User if provided
+    if (typeof name === 'string' && name.trim().length > 0) {
+      await prisma.user.update({
+        where: { id: parseInt(userId) },
+        data: { name: name.trim() },
+      });
+    }
+
+    // Upsert about on UserExtraInfo if provided
+    let extraInfo;
+    if (typeof about === 'string') {
+      extraInfo = await prisma.userExtraInfo.upsert({
+        where: { userId: parseInt(userId) },
+        update: { about },
+        create: { userId: parseInt(userId), about },
+      });
+    } else {
+      extraInfo = await prisma.userExtraInfo.findUnique({ where: { userId: parseInt(userId) } });
+    }
+
+    const user = await prisma.user.findUnique({ where: { id: parseInt(userId) } });
+    res.status(200).json({ message: 'Profile updated', user, extraInfo });
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    res.status(500).json({ error: 'Failed to update profile' });
+  }
+});
 
 module.exports = router;

@@ -1,96 +1,76 @@
 import { useState } from "react";
-//import { FaBars } from 'react-icons/fa';
 import { AiOutlineUser } from "react-icons/ai";
-import { MdLogout } from "react-icons/md";
+import { HiHome, HiCog } from "react-icons/hi";
 import AirbnbLogo from "./AirbnbLogo";
-import AuthPage from "../pages/AuthPage";
-//import airbnbLogo from '../assets/airbnb-logo.png'; // add your logo here
 import { useNavigate } from "react-router-dom";
-import HostTypeModal from "./HostTypeModal";
 import LogoutButton from "./LogoutButton";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
   const handleToggle = () => setMenuOpen(!menuOpen);
-  const handleHostSelect = (type) => {
-    setShowModal(false);
-    navigate(`/host/${type}`);
+  const closeMenuAnd = (fn) => {
+    setMenuOpen(false);
+    fn?.();
   };
 
   return (
-    <nav className="w-full relative z-50 shadow-sm bg-white px-6 md:px-12 py-4 flex justify-between items-center">
-      <div className="flex items-center space-x-2">
-        <AirbnbLogo className="h-6 md:h-8" alt="Airbnb" />
-      </div>
+    <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-gray-100">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-3 flex justify-between items-center">
+        <div className="flex items-center gap-2">
+          <AirbnbLogo className="h-7 md:h-8" alt="Airbnb" />
+        </div>
 
-      <ul className="md:flex space-x-6 text-sm font-medium text-gray-600">
-        <li className="cursor-pointer hover:text-black">Homes</li>
-        <li className="cursor-pointer hover:text-black">Services</li>
-      </ul>
-
-      <div className="flex items-center space-x-4">
-        <span className="md:inline text-sm font-semibold cursor-pointer hover:underline">
-          <div
-            onClick={() => setShowModal(true)}
-            className="cursor-pointer transition"
-          >
-            Become a Host
-          </div>
-        </span>
+        <ul className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600">
+          <li className="flex items-center gap-2 cursor-pointer hover:text-gray-900 group">
+            <div className="p-2 rounded-lg group-hover:bg-gray-100 transition-all duration-200">
+              <HiHome size={20} className="text-gray-700 group-hover:text-gray-900" />
+            </div>
+            <span>Homes</span>
+          </li>
+          <li className="flex items-center gap-2 cursor-pointer hover:text-gray-900 group">
+            <div className="p-2 rounded-lg group-hover:bg-gray-100 transition-all duration-200">
+              <HiCog size={20} className="text-gray-700 group-hover:text-gray-900" />
+            </div>
+            <span>Services</span>
+          </li>
+        </ul>
 
         <div className="relative">
-          <div
+          <button
             onClick={handleToggle}
-            className="w-10 h-10 rounded-full border flex items-center justify-center cursor-pointer hover:shadow"
+            className="w-10 h-10 rounded-full border flex items-center justify-center hover:shadow transition"
+            aria-label="User menu"
           >
             <AiOutlineUser size={20} />
-          </div>
+          </button>
 
           {menuOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-20 py-2 text-sm text-gray-700">
-              <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+            <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg z-20 py-2 text-sm text-gray-700 border">
+              <button
+                className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                onClick={() => closeMenuAnd(() => navigate('/profile'))}
+              >
                 Profile
-              </div>
-              <div
-                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                onClick={() => navigate("/login")}
+              </button>
+              <button
+                className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                onClick={() => closeMenuAnd(() => navigate('/login'))}
               >
                 Login
-              </div>
-              <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                <div
-                  onClick={() => setShowModal(true)}
-                  className="cursor-pointer transition"
-                >
-                  Become a Host
-                </div>
-              </div>
-              <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                Notifications
-              </div>
-              <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                Account Settings
-              </div>
-              <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                Wishlist
-              </div>
-              <hr className="my-1" />
-              <div className="px-4 py-2 hover:bg-red-200 cursor-pointer hover:font-semibold font-medium text-red-500 flex items-center gap-2">
+              </button>
+              <button className="w-full text-left px-4 py-2 hover:bg-gray-100">Notifications</button>
+              <button className="w-full text-left px-4 py-2 hover:bg-gray-100">Account Settings</button>
+              <button className="w-full text-left px-4 py-2 hover:bg-gray-100">Wishlist</button>
+              <hr className="my-2" />
+              <div className="px-4 py-2">
                 <LogoutButton />
               </div>
             </div>
           )}
         </div>
       </div>
-      {showModal && (
-        <HostTypeModal
-          onClose={() => setShowModal(false)}
-          onSelect={handleHostSelect}
-        />
-      )}
     </nav>
   );
 };

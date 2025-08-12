@@ -1,18 +1,20 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useListing } from '../../context/ListingContext';
 
 const DescriptionStep = () => {
   const navigate = useNavigate();
   const [description, setDescription] = useState(
     'You will have a great and comfortable time in this place.'
   );
+  const { updateListingData } = useListing();
 
   const handleNext = () => {
     if (!description.trim()) {
       alert('Please enter a description before proceeding.');
       return;
     }
-
+    updateListingData({ description: description.trim() });
     navigate('/host/home/price');
   };
 

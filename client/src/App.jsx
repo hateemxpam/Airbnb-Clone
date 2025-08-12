@@ -10,12 +10,16 @@ import PhotosUpload from "./pages/host/PhotosUpload";
 import DescriptionStep from "./pages/host/DescriptionStep";
 import HostDashboard from "./pages/host/Dashboard";
 import PricePage from "./pages/host/PricePage";
+import HostChoice from "./pages/host/HostChoice";
+import HostChoiceLanding from "./pages/HostChoiceLanding";
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/become-a-host" element={<HostChoiceLanding />} />
+        <Route path="/host/choose" element={<HostChoice />} />
         <Route path="/login" element={<AuthPage />} />
         <Route path="/signup" element={<AuthPage />} />
         <Route path="/host/home" element={<HostIntro />} />

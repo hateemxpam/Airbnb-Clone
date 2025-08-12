@@ -1,6 +1,7 @@
 const cors = require('cors');
 require('dotenv').config();
 const hostRoutes = require('./routes/host.routes');
+const apartmentRoutes = require('./routes/apartment.routes');
 const express = require('express');
 const app = express();
 const path = require('path');
@@ -12,6 +13,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use('/api/host', hostRoutes);
+app.use('/api', apartmentRoutes);
 // Static serving of media
 app.use('/media', express.static(path.join(__dirname, 'media')));
 

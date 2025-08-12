@@ -6,10 +6,7 @@ const LogoutButton = () => {
 
   const handleLogout = async () => {
     try {
-      // OPTIONAL: Call backend if you track sessions
-      // await axios.post('/auth/logout');
 
-      // ✅ Clear all auth-related data from localStorage
       localStorage.removeItem("token");
       localStorage.removeItem("userId");
       localStorage.removeItem("userRole");
