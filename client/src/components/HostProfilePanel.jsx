@@ -10,7 +10,6 @@ const HostProfilePanel = ({ profile, onUpdated }) => {
     email,
     phone = "Not provided",
     about = "No description",
-    rating = "Not rated",
     image = "https://i.pravatar.cc/150?img=3",
   } = profile;
 
@@ -101,9 +100,7 @@ const HostProfilePanel = ({ profile, onUpdated }) => {
             </button>
           </h2>
           <p className="text-sm text-gray-600">{email}</p>
-          <p className="text-sm text-gray-600">{phone}</p>
           <p className="mt-2 text-sm text-gray-700 italic">{about}</p>
-          <p className="mt-2 text-sm font-medium text-yellow-500">⭐ {rating} rating</p>
         </>
       )}
 

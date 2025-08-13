@@ -3,6 +3,7 @@ import SocialLoginButtons from "./SocialLoginButtons";
 import AirbnbLogo from "./AirbnbLogo";
 import axios from "../api/axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const SignInForm = () => {
   const navigate = useNavigate();
@@ -47,7 +48,7 @@ const SignInForm = () => {
       localStorage.setItem("userRole", userdata.userRole);
       localStorage.setItem("userName", userdata.userName);
 
-      alert("✅ Login successful!");
+      toast.success("Login successful!");
 
       if (userdata.userRole === "host") {
         navigate("/host/dashboard");
@@ -58,6 +59,7 @@ const SignInForm = () => {
       console.error("Login error:", err);
       const msg = err.response?.data?.message || "Login failed";
       setError(msg);
+      toast.error(msg);
     }
   };
 

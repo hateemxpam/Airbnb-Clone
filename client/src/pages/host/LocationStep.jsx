@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api';
 import { FaMapMarkerAlt } from 'react-icons/fa';
@@ -12,12 +12,39 @@ const center = {
 const LocationStep = () => {
   const navigate = useNavigate();
   const { isLoaded } = useLoadScript({
-    googleMapsApiKey: "YOUR_GOOGLE_MAPS_API_KEY", 
+    googleMapsApiKey: "AIzaSyCuNr4J866MqhlhQR62wOxxvk53Fu88fT4", 
   });
 
   const [marker, setMarker] = useState(center);
   const [address, setAddress] = useState('');
+  const [isLoadingAddress, setIsLoadingAddress] = useState(false);
   const { updateListingData } = useListing();
+
+  // Reverse geocoding function to get address from coordinates
+  const getAddressFromCoordinates = useCallback(async (lat, lng) => {
+    setIsLoadingAddress(true);
+    try {
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyCuNr4J866MqhlhQR62wOxxvk53Fu88fT4`
+      );
+      const data = await response.json();
+      
+      if (data.results && data.results.length > 0) {
+        const formattedAddress = data.results[0].formatted_address;
+        setAddress(formattedAddress);
+        return formattedAddress;
+      } else {
+        setAddress(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
+        return `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+      }
+    } catch (error) {
+      console.error('Error getting address:', error);
+      setAddress(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
+      return `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+    } finally {
+      setIsLoadingAddress(false);
+    }
+  }, []);
 
   const handleNext = () => {
     if (!address) return;
@@ -25,16 +52,30 @@ const LocationStep = () => {
     navigate('/host/home/basic-info'); 
   };
 
-  const handleMapClick = (e) => {
-    setMarker({
+  const handleMapClick = async (e) => {
+    const newMarker = {
       lat: e.latLng.lat(),
       lng: e.latLng.lng(),
-    });
+    };
+    setMarker(newMarker);
+    
+    // Get address from the clicked coordinates
+    await getAddressFromCoordinates(newMarker.lat, newMarker.lng);
+  };
+
+  // Handle manual address input with geocoding
+  const handleAddressChange = async (e) => {
+    const newAddress = e.target.value;
+    setAddress(newAddress);
+    
+    // If user clears the address, don't search
+    if (!newAddress.trim()) return;
+    
+    // Optional: You can add geocoding here to update the marker when user types an address
+    // This would require additional implementation for forward geocoding
   };
 
   if (!isLoaded) return <p>Loading map...</p>;
-
-  //console.log("Address: ", address);
 
   return (
     <div className="min-h-screen p-8 flex flex-col items-center">
@@ -47,12 +88,18 @@ const LocationStep = () => {
         <div className="relative mb-6">
           <input
             type="text"
-            placeholder="Enter your address"
+            placeholder="Click on the map or enter your address"
             value={address}
-            onChange={(e) => setAddress(e.target.value)}
+            onChange={handleAddressChange}
             className="w-full px-12 py-4 rounded-full border focus:outline-none focus:ring-2 focus:ring-rose-400"
+            disabled={isLoadingAddress}
           />
           <FaMapMarkerAlt className="absolute top-4 left-4 text-gray-400 text-lg" />
+          {isLoadingAddress && (
+            <div className="absolute top-4 right-4">
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-rose-500"></div>
+            </div>
+          )}
         </div>
 
         <div className="rounded-xl overflow-hidden shadow-md">
@@ -66,6 +113,10 @@ const LocationStep = () => {
           </GoogleMap>
         </div>
 
+        <p className="text-sm text-gray-500 mt-2 text-center">
+          💡 Click anywhere on the map to automatically fill in the address
+        </p>
+
         {/* Navigation */}
         <div className="flex justify-between pt-6">
           <button
@@ -76,9 +127,9 @@ const LocationStep = () => {
           </button>
           <button
             onClick={handleNext}
-            disabled={!address}
+            disabled={!address || isLoadingAddress}
             className={`px-6 py-3 rounded-full transition ${
-              address
+              address && !isLoadingAddress
                 ? 'bg-rose-500 text-white hover:bg-rose-600'
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
             }`}

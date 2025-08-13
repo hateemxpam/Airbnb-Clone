@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from '../../api/axios';
 import { useListing } from '../../context/ListingContext';
+import { toast } from 'react-toastify';
 
 const PhotosUpload = () => {
   const navigate = useNavigate();
@@ -11,19 +12,19 @@ const PhotosUpload = () => {
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
-    const newImages = files.slice(0, 10); // Max 10 images
+    const newImages = files.slice(0, 10);
     setImages((prev) => [...prev, ...newImages]);
   };
 
   const handleNext = async () => {
     if (images.length < 4) {
-      alert('Please upload at least 4 photos.');
+      toast.warn('Please upload at least 4 photos.');
       return;
     }
 
     const userId = localStorage.getItem('userId');
     if (!userId) {
-      alert('❌ User not logged in. Please login again.');
+      toast.error('User not logged in. Please login again.');
       return;
     }
 
@@ -42,17 +43,14 @@ const PhotosUpload = () => {
       });
 
       const imageUrls = res.data.imageUrls;
-      
-      // Store image URLs in localStorage for the next step
       localStorage.setItem('uploadedImageUrls', JSON.stringify(imageUrls));
-      // Also keep them in context for review
       updateListingData({ images: imageUrls });
-      
-      alert('✅ Images uploaded successfully!');
+
+      toast.success('Images uploaded successfully!');
       navigate('/host/home/description');
     } catch (err) {
-      console.error('❌ Image upload failed:', err);
-      alert('❌ Upload failed. Try again.');
+      console.error('Image upload failed:', err);
+      toast.error('Upload failed. Try again.');
     } finally {
       setUploading(false);
     }

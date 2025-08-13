@@ -140,6 +140,51 @@ router.post('/create-apartment', async (req, res) => {
   }
 });
 
+// PUT /api/host/apartment/:id - Update an apartment's editable fields
+router.put('/apartment/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const apartmentId = parseInt(id);
+
+    // Only allow updating known editable fields
+    const {
+      title,
+      description,
+      propertyType,
+      placeType,
+      location,
+      price,
+      guests,
+      bedrooms,
+      beds,
+      bathrooms,
+    } = req.body;
+
+    const data = {};
+    if (typeof title === 'string') data.title = title;
+    if (typeof description === 'string') data.description = description;
+    if (typeof propertyType === 'string') data.propertyType = propertyType;
+    if (typeof placeType === 'string') data.placeType = placeType;
+    if (typeof location === 'string') data.location = location;
+    if (price !== undefined && price !== null && !Number.isNaN(Number(price))) data.price = parseFloat(price);
+    if (guests !== undefined && guests !== null && !Number.isNaN(Number(guests))) data.guests = parseInt(guests);
+    if (bedrooms !== undefined && bedrooms !== null && !Number.isNaN(Number(bedrooms))) data.bedrooms = parseInt(bedrooms);
+    if (beds !== undefined && beds !== null && !Number.isNaN(Number(beds))) data.beds = parseInt(beds);
+    if (bathrooms !== undefined && bathrooms !== null && !Number.isNaN(Number(bathrooms))) data.bathrooms = parseInt(bathrooms);
+
+    const updated = await prisma.apartment.update({
+      where: { id: apartmentId },
+      data,
+      include: { images: true },
+    });
+
+    res.status(200).json({ message: 'Apartment updated successfully', apartment: updated });
+  } catch (error) {
+    console.error('Error updating apartment:', error);
+    res.status(500).json({ error: 'Failed to update apartment' });
+  }
+});
+
 router.post('/upload-images', upload.array('images', 10), async (req, res) => {
   try {
     const imageUrls = req.files.map(file => `/media/${file.filename}`);
