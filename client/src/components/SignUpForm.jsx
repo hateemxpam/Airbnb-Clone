@@ -3,6 +3,7 @@ import SocialLoginButtons from "./SocialLoginButtons";
 import axios from "../api/axios.js";
 import HostTypeModal from "./HostTypeModal";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const SignUpForm = () => {
   const [form, setForm] = useState({
@@ -63,7 +64,7 @@ const SignUpForm = () => {
       });
 
       console.log("Signup response:", res.data);
-      alert("✅ Signup successful! You can now log in.");
+      toast.success("Signup successful! You can now log in.");
       navigate("/login");
 
       setForm({
@@ -84,16 +85,12 @@ const SignUpForm = () => {
       console.error("Signup error:", error);
 
       if (error.response) {
-        console.log("Response data:", error.response.data);
-        alert(
-          `❌ ${error.response.data.message || "Signup failed from backend"}`,
-        );
+        const msg = error.response.data.message || "Signup failed from backend";
+        toast.error(msg);
       } else if (error.request) {
-        console.log("No response received:", error.request);
-        alert("❌ No response from server. Check if backend is running.");
+        toast.error("No response from server. Check if backend is running.");
       } else {
-        console.log("Error setting up request:", error.message);
-        alert("❌ Request setup failed");
+        toast.error("Request setup failed");
       }
     }
   };

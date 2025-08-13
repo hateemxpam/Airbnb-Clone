@@ -38,7 +38,7 @@ const ListingCard = ({ listing }) => {
         </h3>
         <p className="text-xs text-gray-500">{listing.location}</p>
         <p className="text-sm text-gray-700 mt-1">
-          <span className="font-semibold">Rs {listing.price}</span> / night
+          <span className="font-semibold">Rs {listing.price} $</span> /night
         </p>
       </div>
     </div>

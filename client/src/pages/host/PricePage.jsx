@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from '../../api/axios';
 import { useListing } from '../../context/ListingContext';
+import { toast } from 'react-toastify';
 
 
 const HostPricePage = () => {
@@ -39,7 +40,7 @@ const HostPricePage = () => {
 
   const handleSubmit = () => {
     if (!price || Number(price) <= 0) {
-      alert('Please enter a valid price.');
+      toast.warn('Please enter a valid price.');
       return;
     }
     // ✅ Store price in context before confirming
@@ -55,7 +56,7 @@ const HostPricePage = () => {
       const token = localStorage.getItem('token');
 
       if (!userId || !token) {
-        alert('Please log in again.');
+        toast.error('Please log in again.');
         return;
       }
 
@@ -98,12 +99,12 @@ const HostPricePage = () => {
       }
 
       localStorage.removeItem('uploadedImageUrls');
-      alert('✅ Listing created successfully!');
+      toast.success('Listing created successfully!');
       setShowModal(false);
       navigate('/host/dashboard');
     } catch (error) {
       console.error('Error creating listing:', error);
-      alert('❌ Failed to create listing. Please try again.');
+      toast.error('Failed to create listing. Please try again.');
     } finally {
       setSaving(false);
     }
@@ -124,7 +125,7 @@ const HostPricePage = () => {
       {/* 🏷️ Title + Tip */}
       <div className="text-center space-y-2 mb-8">
         <h1 className="text-3xl font-bold">Now, set a weekday base price</h1>
-        <p className="text-gray-500">💡 Start with a competitive rate to attract your first guests.</p>
+        <p className="text-gray-500"> Start with a competitive rate to attract your first guests.</p>
       </div>
 
       {/* 💵 Price Input */}
