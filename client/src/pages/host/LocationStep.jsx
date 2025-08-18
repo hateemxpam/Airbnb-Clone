@@ -20,7 +20,6 @@ const LocationStep = () => {
   const [isLoadingAddress, setIsLoadingAddress] = useState(false);
   const { updateListingData } = useListing();
 
-  // Reverse geocoding function to get address from coordinates
   const getAddressFromCoordinates = useCallback(async (lat, lng) => {
     setIsLoadingAddress(true);
     try {

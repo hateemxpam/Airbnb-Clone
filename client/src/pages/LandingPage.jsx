@@ -5,12 +5,11 @@ import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
 import SearchBar from "../components/SearchBar";
 import ListingCard from "../components/ListingCard";
-import dummyListings from "../dummyArray";
 import axios from "../api/axios";
 
 const LandingPage = () => {
-  const [listings, setListings] = useState(dummyListings);
-  const [loading, setLoading] = useState(false);
+  const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -18,15 +17,12 @@ const LandingPage = () => {
     const fetchListings = async () => {
       try {
         setLoading(true);
+        setError("");
         const response = await axios.get('/apartment');
-        // If we have real listings, use them; otherwise keep dummy data
-        if (response.data && response.data.length > 0) {
-          setListings(response.data);
-        }
+        setListings(response.data);
       } catch (err) {
         console.error('Error fetching listings:', err);
-        // Keep dummy data if API fails
-        setListings(dummyListings);
+        setError('Failed to load listings. Please try again later.');
       } finally {
         setLoading(false);
       }
@@ -84,6 +80,30 @@ const LandingPage = () => {
                 <div className="h-3 bg-gray-200 rounded w-3/4"></div>
               </div>
             ))}
+          </div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <div className="text-red-500 text-6xl mb-4">⚠️</div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Oops! Something went wrong</h3>
+            <p className="text-gray-600 mb-4">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        ) : listings.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="text-gray-500 text-6xl mb-4">🏠</div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">No listings available</h3>
+            <p className="text-gray-600 mb-4">Be the first to create a listing!</p>
+            <button
+              onClick={() => navigate('/become-a-host')}
+              className="bg-rose-500 text-white px-6 py-3 rounded-lg hover:bg-rose-600 transition-colors"
+            >
+              Become a Host
+            </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">

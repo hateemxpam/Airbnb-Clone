@@ -1,20 +1,30 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import HostTypeModal from "./HostTypeModal";
 
 const ListingCard = ({ listing }) => {
   const [favorited, setFavorited] = useState(false);
+  const navigate = useNavigate();
 
-  const toggleFavorite = () => {
+  const toggleFavorite = (e) => {
+    e.stopPropagation(); // Prevent card click when clicking heart
     setFavorited((prev) => !prev);
     // TODO: In future → Save this to user's wishlist via API
   };
 
+  const handleCardClick = () => {
+    navigate(`/listing/${listing.id}`);
+  };
+
   return (
-    <div className="relative bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition duration-200 w-full">
+    <div 
+      className="relative bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition duration-200 w-full cursor-pointer transform hover:scale-[1.02]"
+      onClick={handleCardClick}
+    >
       {/* Heart Icon */}
       <div
-        className="absolute top-2 right-2 z-10 cursor-pointer bg-white rounded-full p-1 shadow"
+        className="absolute top-2 right-2 z-10 cursor-pointer bg-white rounded-full p-1 shadow hover:shadow-lg transition-shadow"
         onClick={toggleFavorite}
       >
         {favorited ? (
