@@ -2,6 +2,8 @@ import AuthPage from "./pages/AuthPage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import PrivateRoute from "./routes/PrivateRoute";
 import LandingPage from "./pages/LandingPage";
+import ListingDetailPage from "./pages/ListingDetailPage";
+import PaymentPage from "./pages/PaymentPage";
 import HostIntro from "./pages/host/HostIntro";
 import PropertyType from "./pages/host/PropertyType";
 import LocationStep from "./pages/host/LocationStep";
@@ -20,6 +22,8 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/listing/:id" element={<ListingDetailPage />} />
+        <Route path="/payment/:id" element={<PaymentPage />} />
         <Route path="/become-a-host" element={<HostChoiceLanding />} />
         <Route path="/host/choose" element={
           <PrivateRoute>

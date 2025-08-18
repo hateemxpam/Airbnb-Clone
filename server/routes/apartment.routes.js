@@ -48,7 +48,9 @@ router.get('/apartment', async (req, res) => {
         beds: apartment.beds,
         bathrooms: apartment.bathrooms,
         hostName: apartment.user.name,
-        hostImage: apartment.user.extraInfo?.profileImage || 'https://i.pravatar.cc/150?img=3'
+        hostImage: apartment.user.extraInfo?.profileImage 
+          ? `${baseUrl}${apartment.user.extraInfo.profileImage}`
+          : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'
       };
     });
 
@@ -56,6 +58,68 @@ router.get('/apartment', async (req, res) => {
   } catch (error) {
     console.error('Error fetching apartments:', error);
     res.status(500).json({ error: 'Failed to fetch apartments' });
+  }
+});
+
+// GET /api/apartment/:id - Get single apartment by ID
+router.get('/apartment/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const apartment = await prisma.apartment.findUnique({
+      where: { id: parseInt(id) },
+      include: {
+        images: true,
+        user: {
+          select: {
+            name: true,
+            extraInfo: {
+              select: {
+                profileImage: true
+              }
+            }
+          }
+        }
+      }
+    });
+
+    if (!apartment) {
+      return res.status(404).json({ error: 'Apartment not found' });
+    }
+
+    // Transform data to match frontend expectations
+    const baseUrl = 'http://localhost:5000';
+    const formattedApartment = {
+      id: apartment.id,
+      title: apartment.title,
+      location: apartment.location,
+      price: apartment.price,
+      image: apartment.images.length > 0 
+        ? `${baseUrl}${apartment.images[0].url}` 
+        : 'https://via.placeholder.com/400x300?text=No+Image',
+      images: apartment.images.map(img => `${baseUrl}${img.url}`),
+      description: apartment.description,
+      propertyType: apartment.propertyType,
+      placeType: apartment.placeType,
+      guests: apartment.guests,
+      bedrooms: apartment.bedrooms,
+      beds: apartment.beds,
+      bathrooms: apartment.bathrooms,
+      address: apartment.location, // Using location as address for now
+      hostName: apartment.user.name,
+      hostImage: apartment.user.extraInfo?.profileImage 
+        ? `${baseUrl}${apartment.user.extraInfo.profileImage}`
+        : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+      amenities: [
+        'WiFi', 'Kitchen', 'Free parking', 'Air conditioning',
+        'Washer', 'Dryer', 'TV', 'Pool', 'Gym', 'Balcony'
+      ] // You can add amenities field to your database later
+    };
+
+    res.json(formattedApartment);
+  } catch (error) {
+    console.error('Error fetching apartment:', error);
+    res.status(500).json({ error: 'Failed to fetch apartment' });
   }
 });
 
